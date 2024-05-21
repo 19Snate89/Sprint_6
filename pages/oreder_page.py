@@ -1,7 +1,6 @@
 import allure
 
 from locators.order_page_locators import ClientOrder
-from locators.main_page_locators import HomePageLocators
 from pages.base_page import BasePage
 from config import CLIENT_DATA
 
@@ -33,15 +32,6 @@ class OrderPage(BasePage):
     def click_next_button(self):
         self.click_element(ClientOrder.NEXT_BUTTON)
 
-    @allure.step('Клик по кнопке верехней кнопке Заказать')
-    def click_top_order_button(self):
-        self.click_element(HomePageLocators.ORDER_BUTTON_TOP)
-
-    @allure.step('Клик по кнопке нижней кнопке Заказать')
-    def click_bottom_order_button(self):
-        element = self.find_element(HomePageLocators.ORDER_BUTTON_BOTTOM)
-        self.driver.execute_script("arguments[0].scrollIntoView(true);", element)
-        self.click_element(HomePageLocators.ORDER_BUTTON_BOTTOM)
 
     @allure.step('Заполнить поле Комментарий для курьера')
     def enter_commentary(self):
@@ -73,12 +63,19 @@ class OrderPage(BasePage):
     def order_successfully(self):
         return self.get_text(ClientOrder.SUCCESS_MODAL)
 
+    @allure.step('Проверка модального окна подтверждения создания заказа')
     def check_text_modal_agreement(self):
-        modal = self.wait_located_element(ClientOrder.AGREEMENT_MODAL)
+        modal = self.find_element(ClientOrder.AGREEMENT_MODAL)
         return modal.text
 
+    @allure.step('Проверка модального окна успешного создания заказа')
     def check_successful_modal(self):
-        modal = self.wait_located_element(ClientOrder.SUCCESS_MODAL)
+        modal = self.find_element(ClientOrder.SUCCESS_MODAL)
         return modal.text
+
+    @allure.step('Проверка титла заказа страницы заказа')
+    def check_title_order_page(self, text_title: str):
+        title = self.get_text(ClientOrder.ORDER_HEADER)
+        assert title in text_title
 
 

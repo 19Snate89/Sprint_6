@@ -10,12 +10,12 @@ class TestTransition:
     def test_url_click_order_button(self, driver):
         mp = MainPage(driver)
         mp.open_main_page(URL)
-        mp.click_to_ya_logo(HomePageLocators.YANDEX_LOGO)
+        mp.click_to_ya_logo()
         url = mp.check_redirect()
         assert URL_REDIRECT == url
 
     @allure.title('Проверка URL по лого Самоката')
     def test_transition_scooter_page(self, driver):
         mp = MainPage(driver)
-        mp.click_to_scooter_logo(HomePageLocators.SCOOTER_LOGO)
+        mp.click_to_scooter_logo()
         assert URL == mp.get_url()

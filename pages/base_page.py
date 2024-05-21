@@ -22,13 +22,6 @@ class BasePage:
             raise Exception(f'Не удалось найти элемент с локатором {element}')
         return element
 
-    def wait_located_element(self, locator: tuple):
-        try:
-            element = WebDriverWait(self.driver, 10).until(EC.visibility_of_element_located(locator))
-        except Exception:
-            raise Exception(f'Не удалось найти элемент с локатором {element}')
-        return element
-
     def wait_clickable_element(self, locator: tuple):
         try:
             element = WebDriverWait(self.driver, 10).until(EC.element_to_be_clickable(locator))
@@ -44,31 +37,47 @@ class BasePage:
         return elements
 
     def enter_text(self, locator: tuple, text: str):
-        element = self.find_element(locator)
-        if element:
-            element.send_keys(text)
-        else:
-            print(f'Не удалось найти элемент с локатором: {element}')
+        try:
+            element = self.find_element(locator)
+            if element:
+                element.send_keys(text)
+        except Exception:
+            raise Exception(f'Не удалось ввести значение в элемент с локатором {element}')
 
-    def get_text(self, locator):
-        element = self.find_element(locator)
-        if element:
-            element.text
-        else:
-            print(f'Не удалось получить текст локатора: {element}')
+    def get_text(self, locator: tuple):
+        try:
+            element = self.find_element(locator)
+            if element:
+                return element.text
+        except Exception:
+            raise Exception(f'Не удалось получить текст элемента с локатором {element}')
 
     def click_element(self, locator: tuple):
-        element = self.find_element(locator)
-        if element:
-            element.click()
-        else:
-            print(f'Не удалось найти элемент с локатором: {element}')
+        try:
+            element = self.wait_clickable_element(locator)
+            if element:
+                self.wait_located_elements(locator)
+                element.click()
+        except Exception:
+            raise Exception(f'Не удалось кликнуть по элементу с локатором {element}')
 
     def close_cookies(self):
         self.click_element(HomePageLocators.CLOSE_COOKIES)
 
-    def quit_driver(self):
-        self.driver.quit()
+    def switch_window(self):
+        try:
+            self.driver.switch_to.window(self.driver.window_handles[1])
+        except Exception:
+            raise Exception(f'Не удалось выполнить переход на другую вкладку')
+
+    def redirect(self):
+        try:
+            self.switch_window()
+            self.find_element(HomePageLocators.REDIRECT)
+            url = self.get_url()
+        except Exception:
+            raise Exception('Не получилось')
+        return url
 
     def get_date(self):
         get_date = datetime.datetime.now()

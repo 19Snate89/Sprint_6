@@ -17,23 +17,18 @@ class MainPage(BasePage):
         self.navigate(f'{url}order')
 
     @allure.step('Нажимаем на лого Яндекса')
-    def click_to_ya_logo(self, locator):
-        self.wait_located_elements(locator)
-        self.click_element(locator)
+    def click_to_ya_logo(self):
+        self.click_element(HomePageLocators.YANDEX_LOGO)
 
     @allure.step('Нажимаем на лого Самокат')
-    def click_to_scooter_logo(self, locator):
-        self.wait_located_elements(locator)
-        self.click_element(locator)
+    def click_to_scooter_logo(self):
+        self.click_element(HomePageLocators.SCOOTER_LOGO)
 
     @allure.step('Проверяем редирект на Дзен в новой вкладке')
     def check_redirect(self):
-        try:
-            self.driver.switch_to.window(self.driver.window_handles[1])
-            self.wait_located_element(HomePageLocators.REDIRECT)
-            url = self.driver.current_url
-        except Exception:
-            raise Exception('Что-то пошло не так')
+        self.switch_window()
+        self.find_element(HomePageLocators.REDIRECT)
+        url = self.get_url()
         return url
 
     @allure.step('Сравниваем ответ в выбранном вопросе')
@@ -50,3 +45,13 @@ class MainPage(BasePage):
         element = self.find_element((method, locator))
         self.driver.execute_script("arguments[0].scrollIntoView(true);", element)
         return self.click_element((method, locator))
+
+    @allure.step('Клик по кнопке верехней кнопке Заказать')
+    def click_top_order_button(self):
+        self.click_element(HomePageLocators.ORDER_BUTTON_TOP)
+
+    @allure.step('Клик по кнопке нижней кнопке Заказать')
+    def click_bottom_order_button(self):
+        element = self.find_element(HomePageLocators.ORDER_BUTTON_BOTTOM)
+        self.driver.execute_script("arguments[0].scrollIntoView(true);", element)
+        self.click_element(HomePageLocators.ORDER_BUTTON_BOTTOM)
